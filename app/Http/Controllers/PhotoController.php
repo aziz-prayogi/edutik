@@ -34,17 +34,17 @@ class PhotoController extends Controller
 
     public function like(Request $request, Photo $photo)
     {
-        // 1. Cek apakah user sudah pernah like foto ini
+        // cek apakah user sudah pernah like foto ini
         $existingLike = Like::where('user_id', Auth::id())
                             ->where('photo_id', $photo->id)
                             ->first();
 
         if ($existingLike) {
-            // User sudah pernah like -> HAPUS LIKE (UNLIKE)
+            // user sudah pernah like -> HAPUS LIKE (UNLIKE)
             $existingLike->delete();
             $message = 'Unlike berhasil!';
         } else {
-            // User belum like -> TAMBAH LIKE
+            // user belum like -> TAMBAH LIKE
             Like::create([
                 'user_id' => Auth::id(),
                 'photo_id' => $photo->id,
@@ -86,7 +86,7 @@ class PhotoController extends Controller
 
     public function reportStore(Request $request, Photo $photo)
     {
-        // 1. Validasi Input
+        // validasi Input
         $request->validate([
             'type' => 'required|in:spam,explicit,misinformation,other', // Tipe laporan harus salah satu dari ini
             'reason' => 'nullable|string|max:1000', // Alasan detail (opsional)
@@ -96,7 +96,7 @@ class PhotoController extends Controller
         ]);
 
         try {
-            // 2. Cek Duplikasi
+            // cek Duplikasi
             $existingReport = Report::where('user_id', Auth::id())
                                     ->where('photo_id', $photo->id)
                                     ->first();
@@ -105,20 +105,20 @@ class PhotoController extends Controller
                 return redirect()->back()->with('error', 'Anda sudah pernah melaporkan foto ini.');
             }
 
-            // 3. Simpan Laporan
+            // simpan Laporan
             Report::create([
                 'user_id' => Auth::id(),
                 'photo_id' => $photo->id,
                 'type' => $request->type,
                 'reason' => $request->reason,
-                'status' => 'pending', // Default status saat laporan masuk
+                'status' => 'pending',
             ]);
 
-            // 4. Redirect kembali
+            // redirect kembali
             return redirect()->back()->with('success', 'Laporan berhasil dikirim! Terima kasih atas kontribusi Anda.');
 
         } catch (\Exception $e) {
-            // Error handling
+            // error handling
             // dd($e); // Hapus ini setelah debugging
             return redirect()->back()->with('error', 'Gagal menyimpan laporan. Coba lagi.');
         }
@@ -129,7 +129,16 @@ class PhotoController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input (Diadaptasi dari validasi Poster Film)
+
+        // dd([
+        //     '1. Input file terbaca?' => $request->hasFile('photo_file'),
+        //     '2. object file laravel' => $request->file('photo_file') ,
+        //     '3. cek error Native PHP' => $_FILES['photo_file']['error'] ?? 'Tidak ada data di $_FILES',
+        //     '4. batas upload Server (PHP.ini)' => ini_get('upload_max_filesize'),
+        //     '5. batas POST Server (PHP.ini)' => ini_get('post_max_size'),
+        // ]);
+
+        // Validasi Input
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|min:10|max:1000', // Diubah menjadi required min:10
@@ -157,7 +166,7 @@ class PhotoController extends Controller
         $photoFile = $request->file('photo_file');
         $photoPath = null;
 
-        // 🚨 FALLBACK KRITIS: Mengatasi kegagalan $request->file() di lingkungan tertentu
+        // mengatasi kegagalan $request->file() di lingkungan tertentu
         if (!$photoFile && isset($_FILES['photo_file']) && $_FILES['photo_file']['error'] === UPLOAD_ERR_OK) {
             $fileData = $_FILES['photo_file'];
             $photoFile = new UploadedFile(
@@ -189,7 +198,7 @@ class PhotoController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'subject' => $request->subject,
-                // Yang disimpan adalah PATH (lokasi file)
+
                 'photo_url' => $photoPath,
             ]);
 

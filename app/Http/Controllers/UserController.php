@@ -153,7 +153,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('user.index')->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function logout()

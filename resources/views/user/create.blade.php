@@ -18,7 +18,6 @@
                     </h3>
 
                     {{-- FORM UPLOAD FOTO --}}
-                    {{-- WAJIB: method="POST" dan enctype="multipart/form-data" --}}
                     <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -59,7 +58,6 @@
                             <label class="form-label fw-bold @error('photo_file') text-danger @enderror" for="photo_file">
                                 File Foto (Max 5MB)
                             </label>
-                            {{-- NAME HARUS 'photo_file' --}}
                             <input type="file" class="form-control @error('photo_file') is-invalid @enderror"
                                 id="photo_file" name="photo_file"
                                 accept="image/jpeg,image/png,image/jpg,image/gif,image/svg,image/webp" required />

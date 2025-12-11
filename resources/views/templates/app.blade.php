@@ -53,7 +53,13 @@
                                 <i class="fas fa-exclamation-triangle me-1"></i> Report
                             </a>
                         </li>
-                    @elseif (Auth::check())
+                    @elseif (Auth::check()  && Auth::user()->role == 'staff')
+                        <li class="nav-item">
+                             <a class="nav-link text-danger fw-bold">
+                                <i class="fas fa-shield-alt me-1"></i> Dashboard staff
+                             </a>
+                        </li>
+                    @else
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('user.index') }}">
                                 <i class="fas fa-home me-1"></i> FYP
